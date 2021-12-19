@@ -2,12 +2,14 @@ set @startDate:= '2021-11-30';
 set @endDate:= '2021-11-30';
 set @locationId:= 1;
 SELECT 
+    'Number of clients Started  Cryptococcal Treatment 12 mons ago and still current on Cryptococcal Mengitis treatment' as 'Indicator',
     b.clinic,
     b.location_id,
     COUNT(b.male_0_to_14) AS 'male_0_to_14',
-    COUNT(b.male_0_to_14) AS 'male_15_and_above',
+    COUNT(b.male_15_and_above) AS 'male_15_and_above',
     COUNT(b.female_0_to_14) AS 'female_0_to_14',
-    COUNT(b.female_15_and_above) AS 'female_15_and_above'
+    COUNT(b.female_15_and_above) AS 'female_15_and_above',
+    COUNT(b.person_id) AS 'total'
 FROM
     (SELECT 
     i.identifier as 'ccc no',
@@ -43,7 +45,7 @@ FROM
     left join etl.flat_cryptococcal_summary c on (c.person_id = m.person_id and m.encounter_id = c.encounter_id)
 WHERE
         m.on_art_this_month = 1
-        AND TIMESTAMPDIFF(month, c.cryptococcal_tx_start_date,m.endDate) = 6
+        AND TIMESTAMPDIFF(month, c.cryptococcal_tx_start_date,m.endDate) = 12
         and c.cryptococcal_tx_start_date is not null
         and c.cryptococcal_tx_end_date is null
         and m.location_id = @locationId

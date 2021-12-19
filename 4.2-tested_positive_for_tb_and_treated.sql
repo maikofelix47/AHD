@@ -5,9 +5,10 @@ SELECT
     b.clinic,
     b.location_id,
     COUNT(b.male_0_to_14) AS 'male_0_to_14',
-    COUNT(b.male_0_to_14) AS 'male_15_and_above',
+    COUNT(b.male_15_and_above) AS 'male_15_and_above',
     COUNT(b.female_0_to_14) AS 'female_0_to_14',
-    COUNT(b.female_15_and_above) AS 'female_15_and_above'
+    COUNT(b.female_15_and_above) AS 'female_15_and_above',
+    COUNT(b.person_id) AS 'total'
 FROM
     (SELECT 
         i.identifier AS 'ccc-no',
@@ -15,10 +16,8 @@ FROM
             m.location_id,
             m.clinic,
             m.cur_arv_meds,
-            m.arv_start_date,
-            m.enrollment_date,
-            m.enrolled_this_month,
-            fhs.cur_who_stage,
+            m.tb_screened_this_visit_this_month,
+            m.started_tb_tx_this_month,
             m.age,
             m.gender,
             CASE
@@ -39,15 +38,16 @@ FROM
             END AS 'female_15_and_above'
     FROM
         etl.hiv_monthly_report_dataset_frozen m
-    LEFT JOIN etl.flat_hiv_summary_v15b fhs ON (fhs.encounter_id = m.encounter_id)
     LEFT JOIN amrs.patient_identifier i ON (i.patient_id = m.person_id
         AND i.identifier_type = 28
         AND i.voided = 0)
     WHERE
-        m.enrolled_this_month = 1
+        m.on_art_this_month = 1
             AND m.location_id = @locationId
-            AND fhs.cur_who_stage IN (3 , 4)
+            AND m.tb_screened_this_visit_this_month = 1
+            AND m.presumed_tb_positive_this_month = 1
+            AND m.started_tb_tx_this_month = 1
             AND m.endDate >= @startDate
             AND m.endDate <= @endDate
-    GROUP BY m.person_id) b
+    GROUP BY m.person_id) `b`
 GROUP BY b.location_id

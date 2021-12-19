@@ -1,13 +1,15 @@
-set @startDate:= '2021-11-30';
-set @endDate:= '2021-11-30';
-set @locationId:= 1;
+set @startDate:= '2021-10-31';
+set @endDate:= '2021-10-31';
+set @locationId:= 11;
 SELECT 
+   'Number of clients Started  Cryptococcal Treatment 6 mons ago and have  CD4 Test done at month 6' as 'Indicator',
     b.clinic,
     b.location_id,
     COUNT(b.male_0_to_14) AS 'male_0_to_14',
-    COUNT(b.male_0_to_14) AS 'male_15_and_above',
+    COUNT(b.male_15_and_above) AS 'male_15_and_above',
     COUNT(b.female_0_to_14) AS 'female_0_to_14',
-    COUNT(b.female_15_and_above) AS 'female_15_and_above'
+    COUNT(b.female_15_and_above) AS 'female_15_and_above',
+    COUNT(b.person_id) AS 'total'
 FROM
     (SELECT 
         i.identifier AS 'ccc no',
